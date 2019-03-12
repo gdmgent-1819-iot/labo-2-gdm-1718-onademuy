@@ -1,65 +1,31 @@
 from sense_hat import SenseHat
 import json
 import requests
-import time
+from time import sleep
 import sys
 
 sense = SenseHat()
 
-# get data from json
-def dataFromJson():
-    with open('data.json') as json_data:
-        data = json.load(json_data)
-        return data
-
-
-# display name
-def getUsers():
+# tinder app
+def tinder():
     request = requests.get('https://randomuser.me/api').json()
+     with open('data.json', 't') as json_data:
+        json.dump(request, json_data)
 
     global data = request['results'][0]
     global name = data['name']['first']
-    global gender = data['gender']
-    global location = data['location']['city']
-
     sense.show_message(name)
-    sense.show_message(gender)
-    sense.show_message(location)
+tinder()
 
-    return name
-    return gender
-    return location
-
-# save data to json
-def dataToJson(user, joystick, dataset):
-    data = dataset
-    if(joystick == 'liked'):
-        data['liked'].append(user)
-        sense.set_pixel(0,0, [0,255,0])
-    else:
-        data['disliked'].append(user)
-        sense.set_pixel(0,0, [255,0,0])
-    with open('data.json', 'w') as outfile:
-        json.dump(data, outfile)
-
-# swipe
-def swipe():
-    try: 
-        data = dataFromJson()
-        user = getUsers()
-        events = sense.stick.get_events()
-        if(len(events) != 0):
-            choiceEvent = events[0]
-        else:
-            choiceEvent = sense.stick.wait_for_event()
-        if(choiceEvent.direction == 'right'):
-            choice = 'disliked'
-        else:
-            choice = 'liked'
-        dataToJson(user, joystick, data)
-        time.sleep(1)
- 
-except KeyboardInterrupt:
-    sense.clear()
-    quit()
-    sys.exit(0)
+while 1:
+    for event in sense.stick.get_events():
+        if event.action =="pressed":
+            if even.direction == 'left':
+                sense.clear(255,0,0)
+                sense.show_message('disliked')
+            elif event.direction == "right":
+                sense.clear(0,255,0)
+                sense.show_message('liked')
+tinder()
+sleep(1)
+sense.clear()
